@@ -11,7 +11,7 @@ new_deck.py — 2つのパーツ集から必要なパーツだけを取り出し
 出力は単体HTML。2つのパーツ集はCSSの設計が違う（基本＝.s / 追加＝.slide）ので、
 基本パーツ集の要素セレクタ（h1・table・th・td など）は .s 配下に、追加パーツ集の * / body は .slide 配下に
 スコープして結合する。両方のトークン（:root）は同じ値なので、配色・書体は自動で揃う。
-ページ番号（フッター）は並び順で振り直す。表紙（b01）・章扉（b04）・裏表紙（b10）は番号を振らない。
+ページ番号（右下）は並び順で振り直す。表紙（b01）・裏表紙（b10）も1枚に数えるが、番号は印字しない。章扉（b04・b27）には印字する。
 
   --list   よく使う部品（規約を満たすことを確かめた20種類）の番号・型名・使いどころを表示して終了
   --all    --list と一緒に付けると、残りの型も含めた65型すべてを表示する（★＝よく使う20種類）
@@ -232,13 +232,15 @@ def main():
             sys.exit(f"範囲外: {tok}")
         picked.append((kind, apply_variant(pool[idx - 1], m.group(3))))
 
-    # ページ番号を振り直す（表紙・裏表紙＝ b01 / b10 は番号なし）
+    # ページ番号を振り直す。表紙・裏表紙（b01 / b10）も1枚に数えるが印字しない。章扉には印字する（slide-rules §4.45）
     page = 0
+    printed = 0
     body = []
     for kind, sec in picked:
-        is_cover = kind == "b" and ('class="s cover"' in sec or 'class="s chap"' in sec)  # 表紙・裏表紙・章扉は番号なし（slide-rules §4.45）
+        is_cover = kind == "b" and 'class="s cover"' in sec
+        page += 1
         if not is_cover:
-            page += 1
+            printed += 1
         if kind == "b":
             sec = re.sub(r'(<div class="foot"><b>)[^<]*(</b><span>)[^<]*(</span>)',
                          lambda mm: f"{mm.group(1)}{a.title}{mm.group(2)}{'' if is_cover else page}{mm.group(3)}", sec)
@@ -271,11 +273,17 @@ def main():
 {base_css}
 /* ===== 追加パーツ集（templates/freeform_parts_more_16x9.html）===== */
 {more_css}
-/* ===== 追加パーツ集の見出しバーを基本パーツ集と同じ様式にする（.slide は zoom:0.8 なので px は 1/0.8 倍） ===== */
-.slide .hdr{{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:0;padding-bottom:10px;margin-bottom:6px}}
-.slide .hdr .logo{{font-family:var(--font-serif);font-weight:600;font-size:30px;color:var(--navy);line-height:1.1;visibility:hidden}}  /* 本文ページの上部は右上のラベルだけ（§4.62） */
-.slide .hdr .date{{font-size:12.5px;letter-spacing:.15em;color:var(--muted)}}
-.slide .title{{margin-top:14px}}
+/* ===== 追加パーツ集の版面を基本パーツ集と同じ様式にする（slide-rules §4.62）=====
+   .slide の座標は 1600×900px（1mm ≈ 4.724px）。文字は zoom 0.8 がかかるので authored px = 実効pt ÷ 0.6。
+   右上のラベル（12pt 太字・角から上4mm・右5mm）、タイトル下の太線（版面の左端から幅の 88.5%）、右下のページ番号（10pt）。
+   .sinner は印刷では版面の余白ぶん内側に置かれ、画面では版面いっぱいに置かれるので、角からの位置を media ごとに書く */
+.slide .hdr{{height:0;margin:0;padding:0;border:0}}
+.slide .hdr .logo{{display:none}}
+.slide .hdr .date{{position:absolute;top:calc(19px - var(--margin-y));right:calc(24px - var(--margin-x));font-size:20px;font-weight:700;letter-spacing:0;color:var(--title-rule);line-height:1.2}}
+.slide .title{{position:relative;margin:11px 0 18px;padding-bottom:19px;max-width:none}}
+.slide .title::after{{content:"";position:absolute;left:calc(-1 * var(--margin-x));bottom:0;width:1416px;height:4.25px;background:var(--title-rule);box-shadow:0 2.4px 4.7px rgba(0,0,0,.35)}}
+.slide .footer{{border-top:0;padding-top:0;color:var(--muted);font-size:12.5px}}
+.slide .footer>span:last-child{{position:absolute;right:calc(24px - var(--margin-x));bottom:calc(28px - var(--margin-y));font-size:16.7px;color:#555b66}}
 /* ===== 系統間の文字スケールも揃える（.s基準の実効サイズ: タイトル22pt・列見出し14.5pt・本文11.5pt。§6
    .slide は zoom:0.8 なので authored px = 実効pt ÷ 0.6） ===== */
 .slide .title{{font-size:36.6px}}
@@ -291,6 +299,8 @@ def main():
   .slide .sinner{{inset:auto;left:0;top:0;width:1600px;height:900px;
     padding:var(--margin-y) var(--margin-x);box-sizing:border-box;
     transform:scale(0.8);transform-origin:top left}}
+  .slide .hdr .date{{top:19px;right:24px}}
+  .slide .footer>span:last-child{{right:24px;bottom:28px}}
 }}
 /* ===== 画面幅がスライド幅（338.67mm）より狭いときは等比で縮める（下の script が .fitwrap で包む） =====
    印刷・PDF・check_layout（いずれも印刷メディア）では縮小を外して原寸に戻す。
@@ -300,7 +310,7 @@ def main():
   .fitwrap>.s, .fitwrap>.slide{{transform:none!important}}
 }}
 </style></head><body>
-<main class="deck skin-warm">
+<main class="deck skin-lab">
 {chr(10).join(body)}
 </main>
 <script>
@@ -338,7 +348,7 @@ def main():
     # ファイル名は NFC に揃える（macOS は濁点を分けた形で保存することがあり、Windows で文字化けして見える — slide-rules §8）
     a.out = unicodedata.normalize("NFC", a.out)
     pathlib.Path(a.out).write_text(out, encoding="utf-8")
-    print(f"wrote {a.out}: {len(picked)} slides（番号付き {page} ページ）")
+    print(f"wrote {a.out}: {len(picked)} slides（番号を印字したページ {printed}）")
 
 
 if __name__ == "__main__":

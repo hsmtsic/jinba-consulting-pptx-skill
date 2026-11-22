@@ -662,6 +662,17 @@ class BotFeedback20261019(unittest.TestCase):
         self.assertTrue(any("連番でない" in l for l in fails), fails)
         self.assertFalse(any("連番でない" in l for l in run(GOOD)[1]))
 
+    def test_page_number_counts_unprinted_cover(self):
+        # 表紙・裏表紙は番号を印字しないが1枚に数える（§4.45）。間に挟んだ枚数ぶん飛ぶのは連番とみなす
+        def deck(nums):
+            pages = ['<section class="s cover"><div class="big">表紙</div><div class="foot"><b>資料</b><span></span></div></section>']
+            for n in nums:
+                pages.append(f'<section class="s"><h1>見本のページのタイトルを置いて番号の検査だけを見る</h1><div class="foot"><b>資料</b><span>{n}</span></div></section>'
+                             if n else '<section class="s cover"><div class="big">裏表紙</div><div class="foot"><b>資料</b><span></span></div></section>')
+            return f'<!DOCTYPE html><html lang="ja"><body>{"".join(pages)}</body></html>'
+        self.assertFalse(any("連番でない" in l for l in run(deck([2, 3, None, 5]))[1]))
+        self.assertTrue(any("連番でない" in l for l in run(deck([2, 4]))[1]))
+
     def test_single_item_list_warns(self):
         html = inject("<li>月末に承認が集中する</li>", "</ul><ul><li>月末に承認が集中する</li></ul><ul>")
         self.assertTrue(any("1つだけの箇条" in l for l in warns(html)))
@@ -1439,6 +1450,14 @@ class DividerAboveHeader(LayoutFeedback20261012):
 
     def test_axis_line_only_in_body_passes(self):
         self.assertFalse(any("縦の線が見出しの行まで" in l for l in self.layout(self.axis_table(False))))
+
+    def test_closed_grid_table_passes(self):
+        # 外枠まで閉じた格子の表（パーツ集の既定）は、縦の線が見出しの上罫で止まるので WARN にしない
+        cell = "border:1px solid #a6a6a6"
+        rows = "".join(f'<tr><td style="{cell};font-weight:700">部門{i}</td><td style="{cell}">月に約{i}0件</td><td style="{cell}">担当{i}名</td></tr>' for i in range(1, 4))
+        html = (f'<table style="border-collapse:collapse"><tr><th style="{cell}">部門</th><th style="{cell}">件数</th><th style="{cell}">担当</th></tr>{rows}</table>'
+                '<div style="height:250px;border:1px solid #333">図</div>')
+        self.assertFalse(any("縦の線が見出しの行まで" in l for l in self.layout(html)))
 
 
 class ReviewFixes20261022(unittest.TestCase):

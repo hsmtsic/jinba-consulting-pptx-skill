@@ -11,51 +11,57 @@
     （テンプレートのタイトルに引っ張られない）。
     実デッキでは h1 を必ずストーリーラインから起こした主張文に差し替える（slide-rules §2.8）。
   納品前: check_deck.py で FAIL 0 → PDF化して全ページ目視。
-  配色・書体は <style> 冒頭の :root トークンで一括管理（Bレーンの既定 warm スキンと同一）。自ブランドにするときはトークンだけ差し替える。
+  配色・書体は <style> 冒頭の :root トークンで一括管理（既定は lab スキン：白地・Arial 系ゴシック・濃いスレートの文字・青の強調）。
+  版面（マスター相当）: 表紙＝中央寄せのタイトルと日付・氏名／章扉＝左の青い縦帯に番号・章名・副題／
+  本文＝左上のタイトルの下に左端から伸びる太い黒線、右上に章のラベル（「01. background」）、右下にページ番号。
+  自ブランドにするときはトークンと「版面」の節だけ差し替える。
   ============================================================
 -->
 <style>
-/* ── デザイントークン（Bレーン pipeline/html-css/consulting-slide-system.css の既定 warm スキンと同一。A/B で既定の色・書体を揃える） ── */
+/* ── デザイントークン（lab スキン。追加パーツ集 freeform_parts_more_16x9.html の :root と同じ値） ── */
 :root{
-  --page-bg:#f2efe9; --slide-bg:#ffffff;
-  --ink:#322014;        /* 本文 */
-  --navy:#322014;       /* 見出し・罫線・濃色パネル（変数名は Bレーン CSS と共通のため navy のまま） */
-  --accent:#5a3921;     /* 軸ラベル・番号・強調 */
-  --cyan:#c5a681;       /* 三角矢印・濃色パネル上の小見出し・淡い強調 */
-  --muted:#8a7b6b;      /* 出典・注記 */
-  --rule:#c5a681;       /* 行間罫 */
-  --hairline:#e2dcd2;   /* さらに薄い罫・非強調セル */
-  --soft:#efeee8;       /* 塗りカード・矢羽・ステップ */
-  --rose:#a22727;       /* 意味を持つ赤（悪化・✕）だけに使う */
-  --font-sans:"Helvetica Neue",Arial,Helvetica,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
-  --font-serif:"Hiragino Mincho ProN","Yu Mincho","Songti SC",Georgia,"Times New Roman",serif;
+  --page-bg:#e9eaec; --slide-bg:#fafafa;
+  --cover-bg:#ffffff;   /* 表紙だけ白 */
+  --ink:#222b3a;        /* 本文 */
+  --navy:#222b3a;       /* 見出し・罫線・濃色パネル（変数名は追加パーツ集と共通のため navy のまま） */
+  --accent:#2e5c8a;     /* 章番号・軸ラベル・番号・強調・章扉の縦帯 */
+  --cyan:#8fb0cf;       /* 三角矢印・濃色パネル上の小見出し・淡い強調 */
+  --muted:#6b7280;      /* 出典・注記・章扉の副題 */
+  --rule:#a6a6a6;       /* 表の格子・行間罫 */
+  --hairline:#dcdcdc;   /* さらに薄い罫・非強調セル */
+  --soft:#f1f1f1;       /* 塗りカード・矢羽・ステップ */
+  --soft-accent:#eef2f7;/* 強調するカード（結論・推す案）の塗り */
+  --title-rule:#000000; /* タイトル下の太線・右上のラベル */
+  --rose:#b23a3a;       /* 意味を持つ赤（悪化・✕）だけに使う */
+  --font-sans:Arial,"Helvetica Neue",Helvetica,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;
+  --font-serif:var(--font-sans); /* 見出しもゴシック（明朝は使わない）。変数名は既存の指定を活かすため残す */
 }
-/* cool スキン（ネイビー。Bレーンの {"skin":"cool"} と同一）にするときは :root を次に差し替える:
-   --page-bg:#f2f2f0; --slide-bg:#ffffff; --ink:#050505; --navy:#071b2c; --accent:#1e5f8c; --cyan:#79c8dc;
-   --muted:#666b70; --rule:#b9bec3; --hairline:#d9dcdf; --soft:#e7f4f8; --rose:#d94c68; */
 @page{size:338.67mm 190.5mm;margin:0}
 html,body{margin:0;background:var(--page-bg);font-family:var(--font-sans);color:var(--navy)}
-.s{width:338.67mm;height:190.5mm;background:var(--slide-bg);position:relative;margin:8mm auto;box-sizing:border-box;padding:9mm 16mm 0 16mm;overflow:hidden;page-break-after:always;display:flex;flex-direction:column;align-items:stretch}
-.bar{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1.5px solid var(--navy);padding-bottom:2.2mm;margin-top:3mm;flex:0 0 auto}
-.logo{font-family:var(--font-serif);font-weight:600;font-size:18pt;color:var(--navy)}
-.date{font-size:7.5pt;letter-spacing:.15em;color:var(--muted)}
-/* 本文ページの上部帯は右上のラベルだけを見せる（資料名はフッターにあるので出さない・罫線も引かない — slide-rules §4.62） */
-.s:not(.cover):not(.chap) .bar{border-bottom:0}
-.s:not(.cover):not(.chap) .bar .logo{visibility:hidden}
-h1{margin:4.5mm 0 0 0;font-family:var(--font-serif);font-size:22pt;line-height:1.3;color:var(--navy);font-weight:600;flex:0 0 auto;word-break:auto-phrase} /* 2行まで可。折り返しは文節単位（auto-phrase・lang="ja" が前提）に任せ、<br> は泣き別れのときだけ（slide-rules §2.13） */
-.c{margin-top:6mm;flex:1;min-height:0;display:flex;flex-direction:column;gap:5mm;margin-bottom:19mm}
+.s{width:338.67mm;height:190.5mm;background:var(--slide-bg);position:relative;margin:8mm auto;box-sizing:border-box;padding:0 16mm;overflow:hidden;page-break-after:always;display:flex;flex-direction:column;align-items:stretch}
+/* ── 版面（マスター相当）。slide-rules §4.62 ──
+   右上のラベル: 章の番号と名前（「01. background」）を右上の角に太字で置く。資料名（.logo）は出さない */
+.bar{position:absolute;top:4mm;right:5mm;display:flex;justify-content:flex-end;align-items:flex-start;border:0;padding:0;margin:0}
+.logo{display:none}
+.date{font-size:12pt;font-weight:700;letter-spacing:0;color:var(--title-rule)}
+/* タイトル: 左上にゴシックの太字。下に、版面の左端から幅の 88.5% まで伸びる太い黒線（影つき）を引く */
+h1{position:relative;margin:13mm 0 0 0;padding:0 0 4mm 0;font-family:var(--font-serif);font-size:22pt;line-height:1.3;color:var(--navy);font-weight:700;flex:0 0 auto;word-break:auto-phrase} /* 2行まで可。折り返しは文節単位（auto-phrase・lang="ja" が前提）に任せ、<br> は泣き別れのときだけ（slide-rules §2.13） */
+h1::after{content:"";position:absolute;left:-16mm;bottom:0;width:299.7mm;height:.9mm;background:var(--title-rule);box-shadow:0 .5mm 1mm rgba(0,0,0,.35)}
+.c{margin-top:6mm;flex:1;min-height:0;display:flex;flex-direction:column;gap:5mm;margin-bottom:14mm}
 .c>.grid{flex:1;grid-auto-rows:1fr;min-height:0}
 .c>.grid.fix{flex:0 0 auto}
-.foot{position:absolute;left:16mm;right:16mm;bottom:5mm;padding-top:2.5mm;border-top:1px solid var(--rule);display:flex;justify-content:space-between;font-size:7.5pt;color:var(--muted)}
-.foot b{color:var(--navy);font-size:8.5pt}
+/* ページ番号: 右下の角に小さく。フッターの罫線と資料名は出さない（.foot b は残すが見せない） */
+.foot{position:absolute;right:5mm;bottom:6mm;display:flex;justify-content:flex-end;font-size:10pt;color:#555b66;border:0;padding:0}
+.foot b{display:none}
 .src{font-size:7.5pt;color:var(--muted);flex:0 0 auto}
 .grid{display:grid;gap:4mm}
 .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
 .card{background:var(--soft);border:0;display:flex;flex-direction:column;box-sizing:border-box}
-.hd{display:flex;align-items:baseline;gap:2.5mm;padding:3.5mm 4mm 2.5mm 4mm;border-bottom:1px solid var(--hairline)}
+.hd{display:flex;align-items:baseline;gap:2.5mm;padding:5mm 6mm 2mm 6mm}
+.card.hl{background:var(--soft-accent)} /* 強調するカード（結論・推す案）。塗りの意味は本文かタイトルで言う */
 .no{font-size:14pt;font-weight:700;color:var(--accent);line-height:1}
-.h{font-size:11pt;font-weight:700;color:var(--navy);line-height:1.3}
-.bd{padding:3.5mm 4.5mm;font-size:10pt;line-height:1.7;color:var(--ink);flex:1}
+.h{font-size:14pt;font-weight:700;color:var(--navy);line-height:1.3}
+.bd{padding:3mm 6mm 5mm 6mm;font-size:11.5pt;line-height:1.5;color:var(--ink);flex:1}
 .ref{font-size:8pt;color:var(--accent);font-weight:700;margin-left:auto;white-space:nowrap}
 .rows .r>div:last-child{display:flex;justify-content:space-between;align-items:baseline;gap:4mm} /* 「→ P.n」を右端に */
 .rows .r{display:grid;grid-template-columns:48mm 1fr;gap:6mm;padding:3mm 0;border-top:1px solid var(--rule);font-size:11.5pt;line-height:1.45;align-items:center} /* 行は中身の高さ。引き伸ばさない（§4.12） */
@@ -70,18 +76,19 @@ h1{margin:4.5mm 0 0 0;font-family:var(--font-serif);font-size:22pt;line-height:1
 .stat .cp{font-size:7.5pt;color:var(--cyan);line-height:1.6}
 .stat.l .cp{color:var(--muted)}
 table{border-collapse:collapse;width:100%;font-size:11.5pt;flex:0 0 auto}
-th{background:none;text-align:left;padding:2.5mm;font-size:14.5pt;font-weight:700;color:var(--navy);border-bottom:1.8px solid var(--navy)}
-td{padding:3mm 2.5mm;border-bottom:1px solid var(--rule);vertical-align:middle;line-height:1.45;color:var(--ink)} /* 上下の余白と行間を詰めて、行が間延びしないようにする（§4.12） */
+/* 表は細いグレーの格子（外枠・縦横とも 1px）。見出し行は塗らずに太字（slide-rules §6） */
+th{background:none;text-align:left;padding:2.5mm 3.5mm;font-size:13.5pt;font-weight:700;color:#000;border:1px solid var(--rule)}
+td{padding:2.5mm 3.5mm;border:1px solid var(--rule);vertical-align:top;line-height:1.4;color:var(--ink)} /* 上下の余白と行間を詰めて、行が間延びしないようにする（§4.12） */
 td.b{font-weight:700;color:var(--navy);white-space:nowrap} /* 数字を折らない（「約／86%」と折れると大きさが違って見える） */
-tr:last-child td{border-bottom:0}
-td.ax{font-size:12.5pt;line-height:1.35;font-weight:700;color:var(--accent);font-family:var(--font-serif);border-right:1.8px solid var(--navy)} /* 行見出しは列の見出し（14.5pt）より小さく、本文（11.5pt）より大きく（§6） */
-th.ax{border-right:0} /* 行の軸の縦線は本文の行だけ。見出しの行に通すと、見出しの下罫より上に線がはみ出る（§6） */
+td.ax{font-size:12.5pt;line-height:1.35;font-weight:700;color:#000;font-family:var(--font-serif)} /* 行見出し（1列目）は太字。大きさは列見出し（13.5pt）と本文（11.5pt）の間（§6） */ /* 行の軸の縦線は本文の行だけ。見出しの行に通すと、見出しの下罫より上に線がはみ出る（§6） */
 /* 軸ボックスの表（b09:axb）: 行の軸を左の塗りの箱で示す（slide-rules §6「塗りの軸ボックス」） */
 table.axb{border-collapse:separate;border-spacing:5mm 0;width:calc(100% + 10mm)}
 .c>table.axb,.side .sb>table.axb,.two>div>table.axb,table.axb{margin-left:-5mm!important;margin-right:-5mm!important} /* 列の間の空き（border-spacing）を左右の端で打ち消し、左端をタイトルに揃える。デッキ側の table の margin 上書きで崩れないよう !important */ /* 列の間の空きの分だけ外へ広げ、左端をタイトルと揃える（上下中央の margin:auto 0 より強く） */
+table.axb th,table.axb td{border:0} /* 軸ボックスの表は格子にしない（箱と列ごとに切れた行の線で区切る） */
 table.axb th{border-bottom:1.8px solid var(--navy)}
 table.axb th.ax{border-bottom:0;border-right:0;color:transparent} /* 箱が軸を示すので、箱の列に見出しを置かない。下罫は箱の列の右から */
-table.axb td{border-bottom:1px solid var(--rule)} /* 行の線は列ごとに切れる（縦の区切りの位置で切る） */
+table.axb td{border-bottom:1px solid var(--rule)}
+table.axb tr:last-child td{border-bottom:0} /* 行の線は列ごとに切れる（縦の区切りの位置で切る） */
 table.axb td.ax{background:var(--navy);color:#fff;border-right:0;border-bottom:1.5mm solid var(--slide-bg);font-size:12.5pt;padding:3mm 4mm} /* 箱の下に横線を通さない */
 table.axb tr:last-child td{border-bottom:0} /* 最終行の下に線を引かない */
 table.axb td:not(.ax)+td,table.axb th:not(.ax)+th{padding-left:4mm} /* 観点を並べた列なので縦の区切り線は引かない。列の間の空きと、列ごとに切れた行の線で区切る（§6） */
@@ -110,11 +117,18 @@ table.eq{table-layout:fixed}
 .two ul{margin:0;padding-left:4.5mm;font-size:10pt;line-height:1.8;color:var(--ink)}
 .two li{margin-bottom:2.5mm}
 .tri{align-self:center;width:0;height:0;border-top:5mm solid transparent;border-bottom:5mm solid transparent;border-left:6mm solid var(--cyan)}
-.cover .big{font-family:var(--font-serif);font-size:34pt;font-weight:700;color:var(--navy);margin-top:38mm;line-height:1.25}
-.cover .sub{font-family:var(--font-serif);font-size:15pt;font-weight:700;color:var(--accent);margin-top:3mm}
-.cover .rule{width:32mm;height:1mm;background:var(--accent);margin:8mm 0 4mm 0}
-.chap .cno{font-family:var(--font-serif);font-size:15pt;font-weight:700;color:var(--accent);margin-top:55mm;letter-spacing:.2em}
-.chap .cbig{font-family:var(--font-serif);font-size:30pt;font-weight:700;color:var(--navy);margin-top:4mm}
+/* 表紙: 白地の中央に、タイトル（太字）と日付・会議名・氏名（細字、1行ずつ）。ロゴ・罫線・ページ番号は置かない */
+.s.cover{background:var(--cover-bg);justify-content:center;align-items:center;text-align:center}
+.cover .bar,.cover .foot{display:none}
+.cover .big{font-family:var(--font-serif);font-size:32pt;font-weight:700;color:var(--navy);line-height:1.2;max-width:290mm;word-break:auto-phrase}
+.cover .rule{display:none}
+.cover .sub{font-family:var(--font-sans);font-size:15pt;font-weight:400;color:#000;margin-top:9mm;line-height:1.45}
+/* 章扉: 左の青い縦帯に、章番号（青の太字）・章名（大きな太字）・副題（グレー）。ページ番号は右下に出す（§4.45） */
+.chap .bar{display:none}
+.chap .cblk{margin:auto 0 auto 1mm;border-left:3.5mm solid var(--accent);padding:3mm 0 3mm 8.5mm;position:relative;top:-2mm}
+.chap .cno{font-family:var(--font-sans);font-size:15pt;font-weight:700;color:var(--accent);line-height:1.2}
+.chap .cbig{font-family:var(--font-serif);font-size:36pt;font-weight:700;color:var(--navy);margin-top:2mm;line-height:1.2}
+.chap .csub{font-family:var(--font-sans);font-size:15pt;font-weight:400;color:var(--muted);margin-top:4mm;line-height:1.4}
 .toc{margin-top:4mm}
 .toc .ti{display:grid;grid-template-columns:14mm 1fr 14mm;gap:4mm;padding:3.6mm 0;border-bottom:1px solid var(--rule);font-size:11.5pt;align-items:baseline}
 .toc .ti .tn{font-family:var(--font-serif);font-weight:700;color:var(--accent)}
@@ -200,7 +214,7 @@ table.eq{table-layout:fixed}
 /* セパレーター（章扉＝アジェンダ再掲・現在地だけ強調）。think-cell のアジェンダ機能に相当。
    目次と同じ並び・同じ文言を使い、章が変わるたびに現在地だけを入れ替えて再掲する。 */
 .agd{display:flex;flex-direction:column;flex:1;min-height:0;justify-content:center}
-.agd .ai{display:grid;grid-template-columns:14mm 1fr 16mm;gap:5mm;align-items:baseline;padding:4.6mm 0;border-bottom:1px solid var(--hairline);color:#b3a798}
+.agd .ai{display:grid;grid-template-columns:14mm 1fr 16mm;gap:5mm;align-items:baseline;padding:4.6mm 0;border-bottom:1px solid var(--hairline);color:#b0b4bb}
 .agd .ai:last-child{border-bottom:0}
 .agd .an{font-family:var(--font-serif);font-weight:700;font-size:14pt}
 .agd .at{font-family:var(--font-serif);font-weight:700;font-size:15pt}
@@ -278,8 +292,7 @@ body.external section.internal{display:none!important}
 <section class="s cover">
   <div class="bar"><div class="logo">資料名</div><div class="date">パーツ01｜表紙</div></div>
   <div class="big">Text 1</div>
-  <div class="rule"></div>
-  <div class="sub">ラベル 1：Text 2に基づく整理</div>
+  <div class="sub">YYYYMMDD 会議名<br>作成者名</div>
   <div class="foot"><b>資料名</b><span>1</span></div>
 </section>
 
@@ -314,8 +327,11 @@ body.external section.internal{display:none!important}
 <!-- ═══ パーツ04: 章扉 ═══ -->
 <section class="s chap">
   <div class="bar"><div class="logo">資料名</div><div class="date">パーツ04｜章扉</div></div>
-  <div class="cno">01</div>
-  <div class="cbig">ラベル 1</div>
+  <div class="cblk">
+    <div class="cno">01</div>
+    <div class="cbig">ラベル 1</div>
+    <div class="csub">Text 1（この章で何を見せるかを1行で）</div>
+  </div>
   <div class="foot"><b>資料名</b><span>4</span></div>
 </section>
 
@@ -433,9 +449,9 @@ body.external section.internal{display:none!important}
 <!-- ═══ パーツ10: 裏表紙（メッセージなし。CTAは手前の通常スライドへ） ═══ -->
 <section class="s cover">
   <div class="bar"><div class="logo">資料名</div><div class="date">パーツ10｜裏表紙</div></div>
-  <div class="big" style="margin-top:60mm;font-size:22pt">会社名</div>
+  <div class="big" style="font-size:22pt">会社名</div>
   <div class="sub">連絡先</div>
-  <div class="src" style="position:absolute;left:16mm;bottom:14mm">本資料は consulting-pptx-skill（github.com/carnot-tech/consulting-pptx-skill）で作成</div>
+  <div class="src" style="position:absolute;left:16mm;bottom:10mm">本資料は consulting-pptx-skill（github.com/carnot-tech/consulting-pptx-skill）で作成</div>
   <div class="foot"><b>資料名</b><span>10</span></div>
 </section>
 
@@ -854,7 +870,7 @@ body.external section.internal{display:none!important}
      条件: 目次（パーツ03）と項目の並び・文言を完全に一致させる。章ごとに .on を移すだけ。 -->
 <section class="s chap">
   <div class="bar"><div class="logo">資料名</div><div class="date">パーツ27｜セパレーター（章扉＝アジェンダ再掲）</div></div>
-  <h1>セパレーター（章扉＝アジェンダ再掲。section は "s chap" でページ番号なし）</h1>
+  <h1>セパレーター（章扉＝アジェンダ再掲。section は "s chap"）</h1>
   <div class="c">
     <div class="agd">
       <div class="ai"><span class="an">01</span><span class="at">ラベル 1</span><span class="ap">P.4</span></div>

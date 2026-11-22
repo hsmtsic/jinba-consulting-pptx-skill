@@ -878,10 +878,11 @@ def check_type_id(idx, text):
 
 
 def check_page_numbers(nums):
-    """§4.45: 印字したページ番号は連番（表紙・章扉・裏表紙は番号を振らないので除く）"""
+    """§4.45: 印字したページ番号は連番。表紙・裏表紙は番号を印字しないが1枚に数えるので、
+    間に番号のないページを挟んだときは、その枚数ぶん飛んでよい（番号＝通しのページ位置）"""
     got = [(i, n) for i, n in nums if n is not None]
     for (i0, a), (i1, b) in zip(got, got[1:]):
-        if b != a + 1:
+        if b != a + 1 and b - a != i1 - i0:
             fail(f"p{i1}: ページ番号が連番でない（前のページ {a} → {b}）（ページを足す・消すしたあとに振り直す。§4.45）")
             return
 

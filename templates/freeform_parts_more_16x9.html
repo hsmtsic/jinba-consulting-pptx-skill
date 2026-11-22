@@ -9,28 +9,29 @@
   ここから該当 section をコピーして使う。使用頻度は基本パーツ集より低い。
   規約の正典: references/slide-rules.md（作成前に必読）／型の一覧: python3 scripts/new_deck.py --list --all
   ★ 各スライドの h1 は「そのパーツが何の型か」を表示しているだけ。実デッキでは主張文に差し替える（slide-rules §2.8）。
-  配色・書体は <style> 冒頭の :root トークン（基本パーツ集と同じ warm 既定）。ネイビー系は .deck に skin-cool を付ける。
+  配色・書体は <style> 冒頭の :root トークン（基本パーツ集と同じ lab 既定）。版面（右上のラベル・タイトル下の太線・右下のページ番号）は new_deck.py が基本パーツ集の様式に揃える。
   納品前: check_deck.py で FAIL 0 → PDF化して全ページ目視。
   ============================================================
 -->
 <style>
 :root {
-  --page-bg: #f2efe9;
-  --slide-bg: #ffffff;
-  --ink: #322014;
-  --navy: #322014;
-  --muted: #8a7b6b;
-  --rule: #c5a681;
-  --hairline: #e2dcd2;
-  --blue: #5a3921;
-  --cyan: #c5a681;
-  --rose: #a22727;
-  --green: #5a3921;
-  --warning: #c5a681;
-  --soft-blue: #efeee8;
-  --soft-yellow: #f6f2ea;
-  --font-sans: "Helvetica Neue", Arial, Helvetica, "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
-  --font-serif: "Hiragino Mincho ProN", "Yu Mincho", "Songti SC", Georgia, "Times New Roman", serif;
+  --page-bg: #e9eaec;
+  --slide-bg: #fafafa;
+  --ink: #222b3a;
+  --navy: #222b3a;
+  --muted: #6b7280;
+  --rule: #a6a6a6;
+  --hairline: #dcdcdc;
+  --blue: #2e5c8a;
+  --cyan: #8fb0cf;
+  --rose: #b23a3a;
+  --green: #2e5c8a;
+  --warning: #c9a227;
+  --soft-blue: #eef2f7;
+  --soft-yellow: #f6f3e6;
+  --title-rule: #000000;
+  --font-sans: Arial, "Helvetica Neue", Helvetica, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+  --font-serif: var(--font-sans); /* 見出しもゴシック（基本パーツ集と同じ lab スキン） */
   --slide-w: 1600px;
   --slide-h: 900px;
   --margin-x: 72px;
@@ -407,26 +408,25 @@ body {
 .comparison {
   display: grid;
   grid-template-columns: 1.1fr 0.8fr 0.8fr 1.6fr;
+  border-top: 1px solid var(--rule);
+  border-left: 1px solid var(--rule);
 }
 
-.comparison > div:nth-last-child(-n+4) {
-  border-bottom: 0; /* 最終行（4列）の下に罫線を置かない（§5.4） */
-}
-
+/* 表は細いグレーの格子（基本パーツ集の table と同じ。§6）。各セルの右と下に線を引き、外枠は親の上と左で閉じる */
 .comparison > div {
   min-height: 86px;
   padding: 14px 18px;
-  border-bottom: 1px solid var(--hairline);
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
   font-size: 19px;
   line-height: 1.25;
 }
 
 .comparison .head {
   min-height: auto;
-  color: var(--ink);
+  color: #000;
   font-size: 21px; /* rule 6: header 2pt larger than body (19px) */
   font-weight: 700;
-  border-bottom: 2px solid var(--rule);
 }
 
 .comparison .row-label {
@@ -696,7 +696,7 @@ body {
 .risk-table th {
   padding: 12px 14px;
   font-size: 21px; /* rule 6: header 2pt larger than body (19px) */
-  border-bottom: 2px solid var(--ink);
+  border: 1px solid var(--rule);
   text-align: left;
   font-weight: 700;
 }
@@ -704,12 +704,8 @@ body {
 .scenario-table td,
 .risk-table td {
   padding: 14px;
-  border-bottom: 1px solid var(--hairline);
+  border: 1px solid var(--rule); /* 細いグレーの格子（§6） */
   vertical-align: top;
-}
-
-.risk-table tbody tr:last-child td {
-  border-bottom: 0; /* 行き先のない罫線を置かない（§5.4） */
 }
 
 .scenario-table .num {
@@ -2828,7 +2824,7 @@ body {
 /* =====================================================================
    Skin: cool — white ground / near-black ink / navy+cyan accent.
    Activated by {"skin": "cool"} at the SlideSpec root (class .skin-cool).
-   Default (no skin) is warm: cream / espresso / brown / serif titles — the same tokens as templates/freeform_parts_16x9.html.
+   Default (no skin) is lab: off-white / slate ink / blue accent / sans titles — the same tokens as templates/freeform_parts_16x9.html.
    ===================================================================== */
 .skin-cool {
   --page-bg: #f2f2f0;
@@ -2847,7 +2843,7 @@ body {
   --soft-yellow: #fff3bd;
 }
 
-/* 見出しは cool/warm とも明朝（PPTX エクスポーターの Yu Mincho と一致。A レーンの自由記述テンプレとも同じ） */
+/* 見出しの書体は --font-serif（lab 既定ではゴシック。基本パーツ集と同じ） */
 .title,
 .cover-title,
 .skin-cool .title,
@@ -3089,7 +3085,7 @@ body {
 /* 社外向けに書き出すときは body に class="external" を付けて印刷すると、社内用のページ（section.internal）が外れる（slide-rules §8） */
 body.external section.internal{display:none!important}
 </style></head><body>
-<main class="deck skin-warm">
+<main class="deck skin-lab">
 <section class="slide slide--no-title-rule">
   <div class="sinner">
     <div class="kicker">01  executive_summary</div>

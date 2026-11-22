@@ -25,7 +25,7 @@
 //  23. 同じ作りの箱の左端が、揃うはずの位置から少しずれている（ツリーの段の始まりなど。WARN。§4.51）
 //  24. 行のリスト（罫線で区切った行の並び）の間延び・左右2列の行の位置のずれ（WARN。§4.12・§4.51）
 //  25. 並べた見出し・大きな数字のうち、一部だけが2行に折れている（WARN。§4.51・§2.13）
-//  26. 表の列の区切り線・行の軸の縦線が、見出しの行まで伸びて見出しの下罫より上に出ている（WARN。§6）
+//  26. 表の列の区切り線・行の軸の縦線が、見出しの行まで伸びて見出しの下罫より上に出ている（WARN。§6。外枠まで閉じた格子の表は除く）
 //  28. PDF のページ数がスライドの枚数と合わない（FAIL）。タイトルが22ptから±10%超ずれる（FAIL。§2.1）
 //  27. 並べた項目（箇条書き・同じ種類の縦の並び）の間が、余白・gap の決まりより文字の1.5倍超（WARN）・3倍超（FAIL）余分に空いている間延び（§4.12）
 //  29. 表のセルの塗りに、同じ色の凡例チップがない（WARN。§5.2・§4.57。「—」だけの非該当セルは除く）
@@ -823,6 +823,9 @@ const { issues, warns } = await page.evaluate(() => {
         if (!head || ![...head.cells].every((c) => c.tagName === "TH")) continue;
         const ruled = [...head.cells].some((c) => { const st = getComputedStyle(c); return parseFloat(st.borderBottomWidth) >= 1 && st.borderBottomStyle !== "none"; });
         if (!ruled) continue;
+        // 外枠まで閉じた格子の表（見出しの行にも上罫がある）は、縦の線が見出しの上罫で止まるので対象外（パーツ集の既定の表）
+        const boxed = [...head.cells].every((c) => { const st = getComputedStyle(c); return parseFloat(st.borderTopWidth) >= 1 && st.borderTopStyle !== "none"; });
+        if (boxed) continue;
         const cells = [...head.cells];
         const bad = cells.find((c, k) => {
           const st = getComputedStyle(c);

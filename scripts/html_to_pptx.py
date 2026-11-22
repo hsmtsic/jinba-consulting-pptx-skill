@@ -35,6 +35,7 @@ from pptx.util import Emu, Pt
 
 SLIDE_W, SLIDE_H = 12192000, 6858000
 SANS, SERIF = "Yu Gothic", "Yu Mincho"  # Windows / Mac の PowerPoint にある和文書体
+SANS_LATIN = "Arial"  # ゴシックの欧文（パーツ集の --font-sans の先頭と同じ）
 NO_STYLE_TABLE = "{2D5ABB26-0587-4C30-8999-92F81FD0307C}"  # 表スタイル「スタイルなし、表のグリッドなし」
 ALIGN = {"left": PP_ALIGN.LEFT, "start": PP_ALIGN.LEFT, "center": PP_ALIGN.CENTER,
          "right": PP_ALIGN.RIGHT, "end": PP_ALIGN.RIGHT, "justify": PP_ALIGN.JUSTIFY}
@@ -115,7 +116,7 @@ def fill_runs(tf, paras, sc, first=True):
                 f.underline = True
             f.color.rgb = rgb(r.get("color", "#000000"))
             name = font_name(r)
-            f.name = name
+            f.name = SANS_LATIN if name == SANS else name
             rPr = run._r.get_or_add_rPr()
             for tag in ("a:ea", "a:cs"):
                 el = rPr.find(qn(tag))

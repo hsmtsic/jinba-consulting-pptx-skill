@@ -255,6 +255,19 @@ const collect = () => {
         return;
       }
 
+      // 中身の空の絶対配置の疑似要素で描いた塗りの線（タイトル下の太線 h1::after など）を矩形にする
+      for (const which of ["::before", "::after"]) {
+        const ps = getComputedStyle(el, which);
+        if (!ps.content || ps.content === "none" || ps.content === "normal" || ps.content.replace(/["']/g, "").trim()) continue;
+        if (ps.position !== "absolute" || ps.display === "none") continue;
+        const f = rgba(ps.backgroundColor);
+        if (!f || f.a <= 0.05) continue;
+        const z = zoomOf(el), w = parseFloat(ps.width) * z, h = parseFloat(ps.height) * z, L = parseFloat(ps.left), T = parseFloat(ps.top);
+        if (!(w > 0 && h > 0) || Number.isNaN(L) || Number.isNaN(T)) continue;
+        const bl = (parseFloat(st.borderLeftWidth) || 0) * z, bt = (parseFloat(st.borderTopWidth) || 0) * z;
+        items.push({ t: "rect", ...rel({ left: r.left + bl + L * z, top: r.top + bt + T * z, width: w, height: h }), fill: f.hex, alpha: f.a, poly: null, ellipse: false, radius: 0, line: null });
+      }
+
       // 塗り・枠・多角形（ルートのスライド自体の地色は背景として別扱い）
       if (!isRoot) {
         const f = rgba(st.backgroundColor);
