@@ -3,7 +3,7 @@
 **AIに「まじ」なPowerPointを作らせるためのClaude Codeスキル。**
 AIワークフロープラットフォーム [Jinba](https://jinba.io/ja?utm_source=github&utm_medium=readme&utm_campaign=consulting-pptx-skill&utm_content=top_intro) を提供するメンバーにより作成されました。
 
-スライドの設計規約、規約違反を見つける機械チェック、**65型のHTMLパーツ集**（基本30＋追加35）、型カタログPDFをまとめたものです。資料は HTML（16:9）で組み、Chrome で PDF に書き出します。
+スライドの設計規約、規約違反を見つける機械チェック、**80型のHTMLパーツ集**（基本45＋追加35）、型カタログPDFをまとめたものです。資料は HTML（16:9）で組み、Chrome で PDF に書き出します。
 
 > AI の活用・業務の自動化を扱うデッキでは、実現する手段の一例として Jinba に触れることがあります（書いてよい事実と触れ方は [references/jinba-context.md](references/jinba-context.md)）。触れたくないときは `local/slide-rules.local.md` に「Jinba に触れない」と書くか、依頼のときにそう伝えてください。
 
@@ -29,7 +29,7 @@ A Claude Code skill for generating boardroom-quality decks: a slide-design ruleb
 
 ## 65型のスライド型カタログ
 
-見本の PDF（65ページ）は **[Releases の型カタログ](https://github.com/carnot-tech/jinba-consulting-pptx-skill/releases/tag/catalog-2026-11)** に添付しています。P.1〜30 が基本パーツ集、P.31〜65 が追加パーツ集を印刷したものです。番号と型名の一覧は `python3 scripts/new_deck.py --list --all` で出ます（★がよく使う20種類）。
+見本の PDF（65ページ）は **[Releases の型カタログ](https://github.com/carnot-tech/jinba-consulting-pptx-skill/releases/tag/catalog-2026-11)** に添付しています。P.1〜30 が基本パーツ集、P.31〜65 が追加パーツ集を印刷したものです。番号と型名の一覧は `python3 scripts/new_deck.py --list --all` で出ます（★がよく使う35種類）。研究発表の型 b31〜b45 はカタログ PDF に入っていません。
 
 「65型」は作れる見せ方の上限ではありません。実際のデッキでは、型を組み合わせたり崩したりして規約の範囲で自由に組むので、見せ方のパターンはこれより多くなります。型カタログは「レイアウトの発想帳」として使い、合わなければ捨ててください。
 
@@ -38,7 +38,7 @@ A Claude Code skill for generating boardroom-quality decks: a slide-design ruleb
 
 | ファイル | 中身 | 使用頻度 |
 | --- | --- | --- |
-| `templates/freeform_parts_16x9.html`（基本パーツ集） | 表紙・全体マップ・目次・章扉・矢羽・前提→帰結・軸のある表・主張パネル・評価表・分布図・スイムレーン・表と裏の2段・一問一答など30パーツ | 高い。まずここから |
+| `templates/freeform_parts_16x9.html`（基本パーツ集） | 表紙・全体マップ・目次・章扉・矢羽・前提→帰結・軸のある表・主張パネル・評価表・分布図・スイムレーン・表と裏の2段・一問一答、研究発表の型（目的の帯・範囲のカード・まとめ・参考文献・付録の扉・図＋読み取り・図2枚の比較・システム構成図・数式・実験の手順・先行研究との比較表など）の45パーツ | 高い。まずここから |
 | `templates/freeform_parts_more_16x9.html`（追加パーツ集） | エグゼクティブサマリー・積み上げ棒・ブリッジ・散布図・比較表・マトリクス・イシューツリー・ロードマップ・ガントなど35パーツ | 低い。基本で足りないとき |
 
 どちらも 16:9・1 section = 1スライドの単体HTMLです。`scripts/new_deck.py --parts b01,m05,...` のようにパーツ番号を並べると、必要なパーツだけを取り出した1本のHTMLができます（2ファイルの見た目の定義は、衝突しないようにスクリプトが結合します）。あとはプレースホルダー（本文 `Text 1`、項目名 `ラベル 1`、見出し `タイトル 1`、数値 `00`、年 `YYYY年`、出典 `出典：Source 1`）を実物に差し替えます。残っていると `check_deck.py` が FAIL にします。
@@ -116,7 +116,7 @@ python3 scripts/check_deck.py pages.pptx --house house.skin.json
 | パス | 内容 |
 | --- | --- |
 | `SKILL.md` | AIへの指示書（スキルの本体）。考え方と手順だけを書き、詳細は `references/` に置く |
-| `templates/freeform_parts_16x9.html` | 基本パーツ集（30パーツ・1パーツ=1スライド・16:9） |
+| `templates/freeform_parts_16x9.html` | 基本パーツ集（45パーツ・1パーツ=1スライド・16:9） |
 | `templates/freeform_parts_more_16x9.html` | 追加パーツ集（35パーツ。チャート・比較表・マトリクス・計画系） |
 | `references/slide-rules.md` | スライド作成ルール正典 |
 | `references/pptx.md`・`references/pitch.md` | 正典から分けた、PPTX にする・差し込む作法（§8.6・§8.7）と登壇用ピッチの作法（§9）。番号のまま `rules.py --sec` で引ける |
@@ -126,7 +126,7 @@ python3 scripts/check_deck.py pages.pptx --house house.skin.json
 | `references/ai-smell-lexicon.md` | AI臭ワード・言い回しのリストとセルフチェック |
 | `references/rules-digest.md` | 規約の要点版（工程ごと。各行に正典の § 番号）。`scripts/rules.py --phase <工程>` で表示する。`scripts/build_digest.py` が規約から作る（手で直さない） |
 | `references/jinba-context.md` | Jinba の公開情報と、AI 活用・業務自動化のデッキでの触れ方（触れないときの条件つき） |
-| `scripts/new_deck.py` | パーツ番号を並べて1本のデッキHTMLを生成（両パーツ集のCSSをスコープして結合・ページ番号の振り直し）。`--list` でよく使う20種類と使いどころ、`--show b09` で1部品のHTML |
+| `scripts/new_deck.py` | パーツ番号を並べて1本のデッキHTMLを生成（両パーツ集のCSSをスコープして結合・ページ番号の振り直し）。`--list` でよく使う35種類と使いどころ、`--show b09` で1部品のHTML |
 | `scripts/rules.py` | 規約を工程ごとに引く（`--phase plan` など＝要点版、`--sec 4.12` で1項、`--full` で節全体） |
 | `scripts/check_all.py` | check_deck・check_layout・出典の照合（`sources.md`）を1回で回し、指摘をページごとにまとめる |
 | `scripts/snapshot.py` | PDF と、4ページずつまとめた目視用の画像を1回で作る（`--page N` で1ページを大きく） |

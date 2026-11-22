@@ -27,7 +27,7 @@
   --accent:#2e5c8a;     /* 章番号・軸ラベル・番号・強調・章扉の縦帯 */
   --cyan:#8fb0cf;       /* 三角矢印・濃色パネル上の小見出し・淡い強調 */
   --muted:#6b7280;      /* 出典・注記・章扉の副題 */
-  --rule:#a6a6a6;       /* 表の格子・行間罫 */
+  --rule:#c8c8c8;       /* 行間罫（薄いグレー。基調色で引かない — §6） */
   --hairline:#dcdcdc;   /* さらに薄い罫・非強調セル */
   --soft:#f1f1f1;       /* 塗りカード・矢羽・ステップ */
   --soft-accent:#eef2f7;/* 強調するカード（結論・推す案）の塗り */
@@ -43,10 +43,10 @@ html,body{margin:0;background:var(--page-bg);font-family:var(--font-sans);color:
    右上のラベル: 章の番号と名前（「01. background」）を右上の角に太字で置く。資料名（.logo）は出さない */
 .bar{position:absolute;top:4mm;right:5mm;display:flex;justify-content:flex-end;align-items:flex-start;border:0;padding:0;margin:0}
 .logo{display:none}
-.date{font-size:12pt;font-weight:700;letter-spacing:0;color:var(--title-rule)}
-/* タイトル: 左上にゴシックの太字。下に、版面の左端から幅の 88.5% まで伸びる太い黒線（影つき）を引く */
+.date{font-size:12pt;font-weight:700;letter-spacing:0;color:var(--navy)}
+/* タイトル: 左上にゴシックの太字。下に、版面の左端から幅の 88.5% まで伸びる太い黒線を引く */
 h1{position:relative;margin:13mm 0 0 0;padding:0 0 4mm 0;font-family:var(--font-serif);font-size:22pt;line-height:1.3;color:var(--navy);font-weight:700;flex:0 0 auto;word-break:auto-phrase} /* 2行まで可。折り返しは文節単位（auto-phrase・lang="ja" が前提）に任せ、<br> は泣き別れのときだけ（slide-rules §2.13） */
-h1::after{content:"";position:absolute;left:-16mm;bottom:0;width:299.7mm;height:.9mm;background:var(--title-rule);box-shadow:0 .5mm 1mm rgba(0,0,0,.35)}
+h1::after{content:"";position:absolute;left:-16mm;bottom:0;width:299.7mm;height:.9mm;background:var(--title-rule)} /* 影は付けない（装飾に見える — §5.4） */
 .c{margin-top:6mm;flex:1;min-height:0;display:flex;flex-direction:column;gap:5mm;margin-bottom:14mm}
 .c>.grid{flex:1;grid-auto-rows:1fr;min-height:0}
 .c>.grid.fix{flex:0 0 auto}
@@ -76,19 +76,18 @@ h1::after{content:"";position:absolute;left:-16mm;bottom:0;width:299.7mm;height:
 .stat .cp{font-size:7.5pt;color:var(--cyan);line-height:1.6}
 .stat.l .cp{color:var(--muted)}
 table{border-collapse:collapse;width:100%;font-size:11.5pt;flex:0 0 auto}
-/* 表は細いグレーの格子（外枠・縦横とも 1px）。見出し行は塗らずに太字（slide-rules §6） */
-th{background:none;text-align:left;padding:2.5mm 3.5mm;font-size:13.5pt;font-weight:700;color:#000;border:1px solid var(--rule)}
-td{padding:2.5mm 3.5mm;border:1px solid var(--rule);vertical-align:top;line-height:1.4;color:var(--ink)} /* 上下の余白と行間を詰めて、行が間延びしないようにする（§4.12） */
+th{background:none;text-align:left;padding:2.5mm;font-size:14.5pt;font-weight:700;color:var(--navy);border-bottom:1.8px solid var(--navy)}
+td{padding:3mm 2.5mm;border-bottom:1px solid var(--rule);vertical-align:middle;line-height:1.45;color:var(--ink)} /* 上下の余白と行間を詰めて、行が間延びしないようにする（§4.12） */
 td.b{font-weight:700;color:var(--navy);white-space:nowrap} /* 数字を折らない（「約／86%」と折れると大きさが違って見える） */
-td.ax{font-size:12.5pt;line-height:1.35;font-weight:700;color:#000;font-family:var(--font-serif)} /* 行見出し（1列目）は太字。大きさは列見出し（13.5pt）と本文（11.5pt）の間（§6） */ /* 行の軸の縦線は本文の行だけ。見出しの行に通すと、見出しの下罫より上に線がはみ出る（§6） */
+tr:last-child td{border-bottom:0}
+td.ax{font-size:12.5pt;line-height:1.35;font-weight:700;color:var(--accent);font-family:var(--font-serif);border-right:1.8px solid var(--navy)} /* 行見出しは列の見出し（14.5pt）より小さく、本文（11.5pt）より大きく（§6） */
+th.ax{border-right:0} /* 行の軸の縦線は本文の行だけ。見出しの行に通すと、見出しの下罫より上に線がはみ出る（§6） */
 /* 軸ボックスの表（b09:axb）: 行の軸を左の塗りの箱で示す（slide-rules §6「塗りの軸ボックス」） */
 table.axb{border-collapse:separate;border-spacing:5mm 0;width:calc(100% + 10mm)}
 .c>table.axb,.side .sb>table.axb,.two>div>table.axb,table.axb{margin-left:-5mm!important;margin-right:-5mm!important} /* 列の間の空き（border-spacing）を左右の端で打ち消し、左端をタイトルに揃える。デッキ側の table の margin 上書きで崩れないよう !important */ /* 列の間の空きの分だけ外へ広げ、左端をタイトルと揃える（上下中央の margin:auto 0 より強く） */
-table.axb th,table.axb td{border:0} /* 軸ボックスの表は格子にしない（箱と列ごとに切れた行の線で区切る） */
 table.axb th{border-bottom:1.8px solid var(--navy)}
 table.axb th.ax{border-bottom:0;border-right:0;color:transparent} /* 箱が軸を示すので、箱の列に見出しを置かない。下罫は箱の列の右から */
-table.axb td{border-bottom:1px solid var(--rule)}
-table.axb tr:last-child td{border-bottom:0} /* 行の線は列ごとに切れる（縦の区切りの位置で切る） */
+table.axb td{border-bottom:1px solid var(--rule)} /* 行の線は列ごとに切れる（縦の区切りの位置で切る） */
 table.axb td.ax{background:var(--navy);color:#fff;border-right:0;border-bottom:1.5mm solid var(--slide-bg);font-size:12.5pt;padding:3mm 4mm} /* 箱の下に横線を通さない */
 table.axb tr:last-child td{border-bottom:0} /* 最終行の下に線を引かない */
 table.axb td:not(.ax)+td,table.axb th:not(.ax)+th{padding-left:4mm} /* 観点を並べた列なので縦の区切り線は引かない。列の間の空きと、列ごとに切れた行の線で区切る（§6） */
@@ -286,6 +285,80 @@ td ul.cb li{margin:0 0 1mm 0}
 th.hbc,td.hbc{text-align:center}
 /* 社外向けに書き出すときは body に class="external" を付けて印刷すると、社内用のページ（section.internal）が外れる（slide-rules §8） */
 body.external section.internal{display:none!important}
+
+/* ── 図・段取り・仕組み・先行研究の型（パーツ36〜45） ── */
+/* 図（パーツ36〜38）: .fimg は見本の枠。実物では <img src="..." alt="..."> か <svg> に差し替える（同じ位置・大きさに収まる） */
+.fig{margin:0;display:flex;flex-direction:column;gap:2.5mm;min-height:0;height:100%}
+.fig>img,.fig>svg,.fig>.fimg{flex:1;min-height:0;width:100%;object-fit:contain;display:block}
+.fig>.fimg{display:flex;align-items:center;justify-content:center;border:1px dashed var(--rule);background:#fff;color:var(--muted);font-size:10pt}
+.fig figcaption{flex:0 0 auto;font-size:10pt;line-height:1.4;color:var(--muted)}
+.figr{display:grid;grid-template-columns:1.55fr 1fr;gap:10mm;flex:1;min-height:0;align-items:stretch}
+.figr>div:last-child{display:flex;flex-direction:column;justify-content:center}
+.pts{margin:0;padding-left:5.5mm;font-size:12pt;line-height:1.55;color:var(--ink)}
+.pts li{margin:0 0 2.5mm 0}
+/* まとめ（パーツ39）: 左に RQ の番号、右に問い（小さく）・答え（太字）・根拠とページ */
+.rqa{display:flex;flex-direction:column;flex:0 0 auto;margin:auto 0}
+.rqa .rr{display:grid;grid-template-columns:24mm 1fr;gap:6mm;padding:4mm 0;border-top:1px solid var(--rule);align-items:start}
+.rqa .rr:first-child{border-top:0}
+.rqa .rn{font-size:16pt;font-weight:700;color:var(--accent);line-height:1.2}
+.rqa .rq{font-size:10.5pt;line-height:1.45;color:var(--muted)}
+.rqa .ra{font-size:13.5pt;font-weight:700;line-height:1.45;color:var(--navy);margin-top:1mm}
+.rqa .re{display:flex;justify-content:space-between;gap:4mm;font-size:11.5pt;line-height:1.5;color:var(--ink);margin-top:1.5mm}
+/* 参考文献（パーツ40）: 著者名の先頭を揃え、2行目以降を字下げする */
+.refs{margin:0;padding-left:7mm;font-size:10.5pt;line-height:1.5;color:var(--ink);flex:0 0 auto}
+.refs li{margin:0 0 2.5mm 0;padding-left:1mm}
+/* 付録の扉（パーツ41）: 章扉と同じ縦帯。タイトルは h1（検査が「付録」を区切りとして見分ける）。タイトル下の太線は引かない */
+.chap .cblk h1{margin:2mm 0 0 0;padding:0;font-size:36pt;line-height:1.2}
+.chap .cblk h1::after{display:none}
+/* システム構成図（パーツ42）: 上段に処理の流れ（箱と矢印）、下段にそれらが共通で使う土台を全幅の枠で */
+.arch{display:grid;grid-template-columns:1fr 10mm 1fr 10mm 1fr;row-gap:5mm;flex:0 0 auto;margin:auto 0}
+.arch .ab{background:var(--soft);padding:5mm 6mm;display:flex;flex-direction:column;gap:1.5mm}
+.arch .ab.hl{background:var(--soft-accent)}
+.arch .ab b,.arch .aband b{font-size:13pt;line-height:1.35;color:var(--navy)}
+.arch .ab span,.arch .aband span{font-size:11pt;line-height:1.5;color:var(--ink)}
+.arch .aa{align-self:center;justify-self:center;font-style:normal;font-size:18pt;line-height:1;color:var(--accent)}
+.arch .aup{grid-column:1/-1;display:grid;grid-template-columns:1fr 10mm 1fr 10mm 1fr;text-align:center;font-size:14pt;line-height:1;color:var(--accent)}
+.arch .aband{grid-column:1/-1;border:1.5px solid var(--accent);padding:4mm 6mm;display:flex;gap:6mm;align-items:baseline}
+/* 数式＋記号の説明（パーツ43）: 式は淡い青の帯の中央に大きく、下に記号の表 */
+.eqn{background:var(--soft-accent);padding:7mm 8mm;text-align:center;font-family:"Times New Roman",Times,serif;font-size:22pt;line-height:1.3;color:var(--navy);flex:0 0 auto}
+.eqn i{font-style:italic}
+.eqn .en{float:right;font-family:var(--font-sans);font-size:12pt;color:var(--muted);line-height:2.2}
+td.sym{font-family:"Times New Roman",Times,serif;font-style:italic;font-size:13pt;white-space:nowrap}
+/* 実験の手順（パーツ44）: 時間を上に、太い線の上に段階を横に並べる */
+.tl{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:0 5mm;flex:0 0 auto;margin:auto 0}
+.tl .st{display:flex;flex-direction:column}
+.tl .tm{font-size:11pt;font-weight:700;color:var(--accent);margin-bottom:2mm}
+.tl .ln{height:1.2mm;background:var(--accent);margin-bottom:4mm}
+.tl .st.sub .ln{background:var(--cyan)}
+.tl .nm{font-size:13pt;font-weight:700;line-height:1.35;color:var(--navy);margin-bottom:2mm}
+.tl .dt{font-size:11pt;line-height:1.55;color:var(--ink)}
+/* 先行研究との比較表（パーツ45）: ✓／― を中央に。本研究の行だけ淡い青で塗り、凡例を表の右上に置く（§5.2） */
+td.mk,th.mk{text-align:center}
+td.mk{font-size:13pt}
+/* 凡例＋表、式＋表のように、表の上に付くものと表をひとまとまりで上下中央に置く（表の margin:auto で離れないように） */
+.tblk{margin:auto 0;display:flex;flex-direction:column;gap:3mm;flex:0 0 auto}
+.tblk>table{margin:0}
+tr.ours td{background:var(--soft-accent)}
+.legend .li-o{background:var(--soft-accent)}
+/* ── 研究発表の型（パーツ31〜35。lab の版面に合わせたカードと箇条書き） ── */
+.card .bd ul{margin:0;padding-left:5.5mm}
+.card .bd li{margin:0 0 1mm 0}
+.card .tag{margin-left:auto;font-size:12pt;font-weight:700;color:#000;white-space:nowrap} /* 見出しの右端の区分（主対象・限定・対象外） */
+.card.off .h,.card.off .tag{color:var(--muted)} /* 対象外のカードは見出しと区分を淡く。本文は読めるまま */
+/* 3枚のカード＋矢印（パーツ31）: 左の2枚が「できないこと」、矢印の先が「それを解く手」 */
+.flow3{display:grid;grid-template-columns:1fr 1fr 9mm 1fr;gap:0 4mm;grid-template-rows:auto auto;align-items:stretch;flex:0 0 auto}
+.flow3 .arr{grid-row:2;grid-column:3;align-self:center;justify-self:center;font-size:20pt;line-height:1;color:var(--accent)}
+.concl{font-size:14pt;font-weight:700;line-height:1.45;color:var(--navy);padding:0 4mm;flex:0 0 auto} /* カードの下の結論（1〜2文） */
+/* 目的の帯（パーツ33）: 左に「目的」の語、右に目的の1文 */
+.goal{display:grid;grid-template-columns:30mm 1fr;gap:0 4mm;align-items:baseline;background:var(--soft-accent);padding:5mm 8mm;flex:0 0 auto}
+.goal .gl{font-size:15pt;font-weight:700;color:var(--accent)}
+.goal .gx{font-size:13pt;line-height:1.45;color:var(--ink)}
+.card .hd .no{font-size:14pt;color:var(--navy);margin-right:2mm}
+/* 見出しつきの箇条書き（パーツ35）: 決めることと作ることのように、群ごとに見出しを立てて並べる */
+.secs{display:flex;flex-direction:column;gap:8mm;flex:0 0 auto;padding:2mm 4mm 0 4mm}
+.secs .sh{font-size:15pt;font-weight:700;color:#000;margin:0 0 2mm 0}
+.secs ul{margin:0;padding-left:5.5mm;font-size:12.5pt;line-height:1.55;color:var(--ink)}
+.secs li{margin:0 0 1.5mm 0}
 </style></head><body>
 
 <!-- ═══ パーツ01: 表紙 ═══ -->
@@ -993,6 +1066,260 @@ body.external section.internal{display:none!important}
     </div>
   </div>
   <div class="foot"><b>資料名</b><span>30</span></div>
+</section>
+
+<!-- ═══ パーツ31: 3枚のカード＋矢印（できないこと2つ → それを解く手、下に結論） ═══
+     使いどころ: 背景のページで「今のやり方では A も B もできない → だから C」を1枚で言う。
+     左の2枚の上に「今のやり方の限界」、右の1枚の上に「この研究の打ち手」のような見出しを置き、矢印が2枚目からでなく左の2枚の束から出ることを示す。
+     矢印の先のカードだけ淡い青（.card.hl）にする。
+     カードの下の結論（.concl）はこのページの主張の言い換えではなく、次のページへ渡す要件を1〜2文で書く。 -->
+<section class="s">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ31｜3枚のカード＋矢印</div></div>
+  <h1>3枚のカード＋矢印</h1>
+  <div class="c" style="justify-content:center;gap:12mm">
+    <div class="flow3">
+      <div class="axh" style="grid-column:1/3"><span>タイトル 1</span></div><div></div><div class="axh"><span>タイトル 2</span></div>
+      <div class="card"><div class="hd"><span class="h">ラベル 1</span></div><div class="bd">Text 1</div></div>
+      <div class="card"><div class="hd"><span class="h">ラベル 2</span></div><div class="bd">Text 2</div></div>
+      <div class="arr">→</div>
+      <div class="card hl"><div class="hd"><span class="h">ラベル 3</span></div><div class="bd">Text 3</div></div>
+    </div>
+    <div class="concl">Text 4（だから何が要るかを1〜2文で）</div>
+  </div>
+  <div class="foot"><b>資料名</b><span>31</span></div>
+</section>
+
+<!-- ═══ パーツ32: 2枚の箇条書きカード ═══
+     使いどころ: 先行研究・既存の仕組みの問題を2つの観点に分けて並べる。各カードの見出しは問題そのものを短い句で書く。
+     箇条は1枚に2〜4個。左右で数が違ってよいが、粒度（事実か解釈か）は揃える。 -->
+<section class="s">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ32｜2枚の箇条書きカード</div></div>
+  <h1>2枚の箇条書きカード</h1>
+  <div class="c" style="justify-content:center">
+    <div class="grid g2 fix">
+      <div class="card"><div class="hd"><span class="h">ラベル 1</span></div><div class="bd"><ul><li>Text 1</li><li>Text 2</li><li>Text 3</li></ul></div></div>
+      <div class="card"><div class="hd"><span class="h">ラベル 2</span></div><div class="bd"><ul><li>Text 4</li><li>Text 5</li></ul></div></div>
+    </div>
+  </div>
+  <div class="foot"><b>資料名</b><span>32</span></div>
+</section>
+
+<!-- ═══ パーツ33: 目的の帯＋2枚のカード（目的と RQ） ═══
+     使いどころ: 研究の目的を1文で示し、その下にリサーチクエスチョン（RQ1・RQ2）や作業の柱を2枚で並べる。
+     帯の左の語は「目的」「Goal」のように短く。カードの番号（.no）は後のページの章ラベルと同じ番号にする（§4.33）。 -->
+<section class="s">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ33｜目的の帯＋2枚のカード</div></div>
+  <h1>目的の帯＋2枚のカード</h1>
+  <div class="c" style="justify-content:center">
+    <div class="goal"><span class="gl">ラベル 1</span><span class="gx">Text 1（目的を1文で）</span></div>
+    <div class="grid g2 fix">
+      <div class="card"><div class="hd"><span class="no">RQ1</span><span class="h">ラベル 2</span></div><div class="bd"><ul><li>Text 2</li><li>Text 3</li><li>Text 4</li></ul></div></div>
+      <div class="card"><div class="hd"><span class="no">RQ2</span><span class="h">ラベル 3</span></div><div class="bd"><ul><li>Text 5</li><li>Text 6</li><li>Text 7</li></ul></div></div>
+    </div>
+  </div>
+  <div class="foot"><b>資料名</b><span>33</span></div>
+</section>
+
+<!-- ═══ パーツ34: 範囲のカード 2×2（主に扱う・一部扱う・扱わない） ═══
+     使いどころ: 検証・調査の範囲を、枠組みの4区分（例: Sargent の4つの妥当性）に当てて示す。
+     扱う区分は淡い青（.card.hl）、扱わない区分は灰色の塗りで見出しと区分を淡く（.card.off）。見出しの右端に区分（.tag）を書く。
+     区分の語は3種類までにし、ページの下に枠組みの出典を置く。 -->
+<section class="s">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ34｜範囲のカード 2×2</div></div>
+  <h1>範囲のカード 2×2</h1>
+  <div class="c" style="justify-content:center">
+    <div class="grid g2 fix">
+      <div class="card hl"><div class="hd"><span class="h">ラベル 1</span><span class="tag">ラベル 5</span></div><div class="bd">Text 1</div></div>
+      <div class="card hl"><div class="hd"><span class="h">ラベル 2</span><span class="tag">ラベル 6</span></div><div class="bd">Text 2</div></div>
+      <div class="card off"><div class="hd"><span class="h">ラベル 3</span><span class="tag">ラベル 7</span></div><div class="bd">Text 3</div></div>
+      <div class="card off"><div class="hd"><span class="h">ラベル 4</span><span class="tag">ラベル 7</span></div><div class="bd">Text 4</div></div>
+    </div>
+    <div class="src">出典：Source 1</div>
+  </div>
+  <div class="foot"><b>資料名</b><span>34</span></div>
+</section>
+
+<!-- ═══ パーツ35: 見出しつきの箇条書き（今後の作業） ═══
+     使いどころ: 最後に「決めること」「作ること」のように群に分けて次の作業を並べる。各項目は「対象：決めること」の形で、対象の語を先に置く。
+     他のページの内容を指すときはページ番号で（「P.11〜14 の項目を実装する」）。 -->
+<section class="s">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ35｜見出しつきの箇条書き</div></div>
+  <h1>見出しつきの箇条書き</h1>
+  <div class="c">
+    <div class="secs">
+      <div><div class="sh">ラベル 1</div><ul><li>ラベル 3：Text 1</li><li>ラベル 4：Text 2</li><li>ラベル 5：Text 3</li></ul></div>
+      <div><div class="sh">ラベル 2</div><ul><li>Text 4</li><li>Text 5</li></ul></div>
+    </div>
+  </div>
+  <div class="foot"><b>資料名</b><span>35</span></div>
+</section>
+
+<!-- ═══ パーツ36: 図＋読み取り（左に図、右に読み取りの箇条） ═══
+     使いどころ: 実験結果のグラフ・画面・写真を1枚見せ、そこから言えることを右に2〜4点書く。
+     .fimg は見本の枠。実物は <img src="fig1.png" alt="..."> に差し替える（枠と同じ大きさに収まる）。キャプションは「図1　何を・どの条件で」。
+     読み取りは図に写っていることだけを書き、図に無い解釈は根拠と一緒に別のページへ。 -->
+<section class="s">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ36｜図＋読み取り</div></div>
+  <h1>図＋読み取り</h1>
+  <div class="c">
+    <div class="figr">
+      <figure class="fig"><div class="fimg">ラベル 1（画像に差し替える）</div><figcaption>図1　Text 1</figcaption></figure>
+      <div><div class="axh"><span>タイトル 1</span></div><ul class="pts"><li>Text 2</li><li>Text 3</li><li>Text 4</li></ul></div>
+    </div>
+    <div class="src">出典：Source 1</div>
+  </div>
+  <div class="foot"><b>資料名</b><span>36</span></div>
+</section>
+
+<!-- ═══ パーツ37: 図2枚の比較（条件A・Bを左右に、下に差の読み取り） ═══
+     使いどころ: 条件・手法・前後の違いを、同じ形の図2枚で見せる。2枚の軸の範囲と目盛りは揃える（揃っていないと差が読めない）。
+     キャプションは条件の名前から始める。下の1文は「何がどれだけ違うか」。 -->
+<section class="s">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ37｜図2枚の比較</div></div>
+  <h1>図2枚の比較</h1>
+  <div class="c">
+    <div class="grid g2">
+      <figure class="fig"><div class="fimg">ラベル 1（画像に差し替える）</div><figcaption>図1　ラベル 2：Text 1</figcaption></figure>
+      <figure class="fig"><div class="fimg">ラベル 3（画像に差し替える）</div><figcaption>図2　ラベル 4：Text 2</figcaption></figure>
+    </div>
+    <div class="concl">Text 3（2枚の違いを1文で）</div>
+  </div>
+  <div class="foot"><b>資料名</b><span>37</span></div>
+</section>
+
+<!-- ═══ パーツ38: 図1枚を大きく（キャプション＋出典） ═══
+     使いどころ: 構成図・画面・地図など、細部まで読ませたい図を1枚で。言いたいことはタイトルに書き、図の中に注記を足しすぎない。 -->
+<section class="s">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ38｜図1枚を大きく</div></div>
+  <h1>図1枚を大きく</h1>
+  <div class="c">
+    <figure class="fig"><div class="fimg">ラベル 1（画像に差し替える）</div><figcaption>図1　Text 1</figcaption></figure>
+    <div class="src">出典：Source 1</div>
+  </div>
+  <div class="foot"><b>資料名</b><span>38</span></div>
+</section>
+
+<!-- ═══ パーツ39: まとめ（RQ ごとの答え） ═══
+     使いどころ: 最後に、冒頭で立てた問い（RQ）それぞれへの答えを1文で言い切る。問いの文言は目的のページ（パーツ33）と同じにする。
+     根拠の行の右端に、根拠を見せたページを「→ P.n」で書く。答えが出ていない問いは「未」と書き、今後の作業（パーツ35）へつなぐ。 -->
+<section class="s">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ39｜まとめ（RQ ごとの答え）</div></div>
+  <h1>まとめ（RQ ごとの答え）</h1>
+  <div class="c">
+    <div class="rqa">
+      <div class="rr"><div class="rn">RQ1</div><div><div class="rq">Text 1（問い）</div><div class="ra">Text 2（答えを1文で）</div><div class="re"><span>Text 3（根拠）</span><span class="ref">→ P.3</span></div></div></div>
+      <div class="rr"><div class="rn">RQ2</div><div><div class="rq">Text 4（問い）</div><div class="ra">Text 5（答えを1文で）</div><div class="re"><span>Text 6（根拠）</span><span class="ref">→ P.5</span></div></div></div>
+    </div>
+  </div>
+  <div class="foot"><b>資料名</b><span>39</span></div>
+</section>
+
+<!-- ═══ パーツ40: 参考文献の一覧 ═══
+     使いどころ: 本文で引いた文献を一覧にする。書式は分野の慣例（APA など）に揃え、本文の引用（著者, 年）と1対1で対応させる。
+     本文で引いていない文献は載せない。多ければ付録の扉（パーツ41）の後ろに置く。 -->
+<section class="s">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ40｜参考文献の一覧</div></div>
+  <h1>参考文献の一覧</h1>
+  <div class="c">
+    <ol class="refs">
+      <li>Text 1, A. (YYYY). Text 2. <i>Text 3</i>, 0(0), 00–00.</li>
+      <li>Text 4, B., &amp; Text 5, C. (YYYY). Text 6. <i>Text 7</i>, 0(0), 00–00.</li>
+      <li>Text 8, D. (YYYY). <i>Text 9</i>. Text 10.</li>
+    </ol>
+  </div>
+  <div class="foot"><b>資料名</b><span>40</span></div>
+</section>
+
+<!-- ═══ パーツ41: 付録の扉 ═══
+     使いどころ: 本編と付録の間に挟む区切り（§4.100）。付録の各ページは、右上のラベルを「付録」にし、タイトルは主張の文にする（§2）。
+     タイトルの h1 は「付録」で始める（検査が区切りとして見分ける）。 -->
+<section class="s chap">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ41｜付録の扉</div></div>
+  <div class="cblk">
+    <div class="cno">APPENDIX</div>
+    <h1 class="cbig">付録</h1>
+    <div class="csub">Text 1（付録に置くものを1行で）</div>
+  </div>
+  <div class="foot"><b>資料名</b><span>41</span></div>
+</section>
+
+<!-- ═══ パーツ42: システム構成図（処理の流れ＋共通の土台） ═══
+     使いどころ: 作った仕組み・実験基盤の部品と、データの流れを1枚で見せる。上段は左から右へ処理が進む順、下段の枠は上段の全部が使う土台（設定・記録・データ）。
+     このページで変える・作る部品だけを淡い青（.ab.hl）にし、その意味をタイトルか注で言う（§5.2）。箱の2行目には、その部品が受け取る・渡すものを書く。 -->
+<section class="s">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ42｜システム構成図</div></div>
+  <h1>システム構成図</h1>
+  <div class="c">
+    <div class="arch">
+      <div class="ab"><b>ラベル 1</b><span>Text 1</span></div><i class="aa">→</i>
+      <div class="ab hl"><b>ラベル 2</b><span>Text 2</span></div><i class="aa">→</i>
+      <div class="ab"><b>ラベル 3</b><span>Text 3</span></div>
+      <div class="aup"><span>↕</span><span></span><span>↕</span><span></span><span>↕</span></div>
+      <div class="aband"><b>ラベル 4</b><span>Text 4</span></div>
+    </div>
+    <div class="src">注：Text 5（淡い青の箱の意味）</div>
+  </div>
+  <div class="foot"><b>資料名</b><span>42</span></div>
+</section>
+
+<!-- ═══ パーツ43: 数式＋記号の説明 ═══
+     使いどころ: モデルの更新式・評価指標の定義を示す。式は1ページに1〜2本。式番号は本文で引くときだけ付ける。
+     下の表は、式に出てくる記号を出てくる順に全部並べ、意味と既定値（または範囲）を書く。記号の書体は式と同じ斜体にする。 -->
+<section class="s">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ43｜数式＋記号の説明</div></div>
+  <h1>数式＋記号の説明</h1>
+  <div class="c" style="justify-content:center">
+    <div class="tblk" style="gap:6mm">
+    <div class="eqn"><span class="en">(1)</span><i>x</i><sub><i>t</i>+1</sub> = Text 1</div>
+    <table class="eq">
+      <tr><th>記号</th><th>意味</th><th>既定値</th></tr>
+      <tr><td class="sym">x<sub>t</sub></td><td>Text 2</td><td>Text 3</td></tr>
+      <tr><td class="sym">w</td><td>Text 4</td><td>Text 5</td></tr>
+      <tr><td class="sym">θ</td><td>Text 6</td><td>Text 7</td></tr>
+    </table>
+    </div>
+  </div>
+  <div class="foot"><b>資料名</b><span>43</span></div>
+</section>
+
+<!-- ═══ パーツ44: 実験の手順（時間の流れ） ═══
+     使いどころ: 参加者・試行の流れを時間の順に横に並べる。上に時間（「0〜5分」「1日目」）、太い線の下に段階の名前と中身。
+     本番の課題とそれ以外（説明・練習・質問紙）を線の色で分ける（.st.sub が淡い線）。色の意味は注で言う（§5.2）。段階は3〜6つ。 -->
+<section class="s">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ44｜実験の手順</div></div>
+  <h1>実験の手順</h1>
+  <div class="c">
+    <div class="tl">
+      <div class="st sub"><div class="tm">ラベル 1</div><div class="ln"></div><div class="nm">ラベル 2</div><div class="dt">Text 1</div></div>
+      <div class="st sub"><div class="tm">ラベル 3</div><div class="ln"></div><div class="nm">ラベル 4</div><div class="dt">Text 2</div></div>
+      <div class="st"><div class="tm">ラベル 5</div><div class="ln"></div><div class="nm">ラベル 6</div><div class="dt">Text 3</div></div>
+      <div class="st sub"><div class="tm">ラベル 7</div><div class="ln"></div><div class="nm">ラベル 8</div><div class="dt">Text 4</div></div>
+    </div>
+    <div class="src">注：Text 5（濃い線と淡い線の意味）</div>
+  </div>
+  <div class="foot"><b>資料名</b><span>44</span></div>
+</section>
+
+<!-- ═══ パーツ45: 先行研究との比較表（✓／―、本研究の行を強調） ═══
+     使いどころ: 先行研究を行、観点を列にして、本研究がどこを埋めるかを示す。観点は本研究の主張に効くものだけ（§6「列は主張に必要なものだけ」）。
+     行見出しは「著者（年）」。本研究の行だけを淡い青で塗り、右上の凡例で意味を示す。部分的に満たすものは「△」にして注で条件を書く。 -->
+<section class="s">
+  <div class="bar"><div class="logo">資料名</div><div class="date">パーツ45｜先行研究との比較表</div></div>
+  <h1>先行研究との比較表</h1>
+  <div class="c" style="justify-content:center">
+    <div class="tblk">
+    <div class="legend"><span><i class="li-o"></i>ラベル 1</span></div>
+    <table class="eq">
+      <tr><th class="ax">ラベル 2（軸）</th><th class="mk">ラベル 3</th><th class="mk">ラベル 4</th><th class="mk">ラベル 5</th><th class="mk">ラベル 6</th></tr>
+      <tr><td class="ax">ラベル 7</td><td class="mk">✓</td><td class="mk">―</td><td class="mk">―</td><td class="mk">―</td></tr>
+      <tr><td class="ax">ラベル 8</td><td class="mk">✓</td><td class="mk">✓</td><td class="mk">―</td><td class="mk">―</td></tr>
+      <tr><td class="ax">ラベル 9</td><td class="mk">―</td><td class="mk">✓</td><td class="mk">△</td><td class="mk">―</td></tr>
+      <tr class="ours"><td class="ax">ラベル 10</td><td class="mk">✓</td><td class="mk">✓</td><td class="mk">✓</td><td class="mk">✓</td></tr>
+    </table>
+    </div>
+    <div class="src">注：△＝Text 1</div>
+  </div>
+  <div class="foot"><b>資料名</b><span>45</span></div>
 </section>
 
 <script>

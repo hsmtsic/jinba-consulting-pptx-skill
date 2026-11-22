@@ -4,17 +4,18 @@ new_deck.py — 2つのパーツ集から必要なパーツだけを取り出し
 
   python3 scripts/new_deck.py --parts b01,b02,m05,b06,m10,b09,b10 --title "資料名" -o mydeck.html
 
-  b01〜b30 = templates/freeform_parts_16x9.html（基本パーツ集）のパーツ番号
+  b01〜b45 = templates/freeform_parts_16x9.html（基本パーツ集）のパーツ番号
   m01〜m35 = templates/freeform_parts_more_16x9.html（追加パーツ集）のパーツ番号
-  番号はパーツ集の中の並び順（Releases に添付した型カタログ PDF のページ順と同じ。基本 P.1〜30、追加 P.31〜65 → m01〜m35）
+  番号はパーツ集の中の並び順。b01〜b30 と m01〜m35 は Releases に添付した型カタログ PDF のページ順と同じ（基本 P.1〜30、追加 P.31〜65）。
+  b31〜b45（研究発表の型）はカタログ PDF に入っていない
 
 出力は単体HTML。2つのパーツ集はCSSの設計が違う（基本＝.s / 追加＝.slide）ので、
 基本パーツ集の要素セレクタ（h1・table・th・td など）は .s 配下に、追加パーツ集の * / body は .slide 配下に
 スコープして結合する。両方のトークン（:root）は同じ値なので、配色・書体は自動で揃う。
 ページ番号（右下）は並び順で振り直す。表紙（b01）・裏表紙（b10）も1枚に数えるが、番号は印字しない。章扉（b04・b27）には印字する。
 
-  --list   よく使う部品（規約を満たすことを確かめた20種類）の番号・型名・使いどころを表示して終了
-  --all    --list と一緒に付けると、残りの型も含めた65型すべてを表示する（★＝よく使う20種類）
+  --list   よく使う部品（規約を満たすことを確かめた35種類）の番号・型名・使いどころを表示して終了
+  --all    --list と一緒に付けると、残りの型も含めた80型すべてを表示する（★＝よく使う35種類）
   --show b09,m05   指定した部品の HTML（section だけ）を表示して終了。パーツ集の原本は開かない
 """
 import argparse, pathlib, re, sys, unicodedata
@@ -120,7 +121,7 @@ def part_names(html, cls):
     return names
 
 
-# よく使う部品。規約（slide-rules.md）と機械チェックを満たすことを確かめた20種類。
+# よく使う部品。規約（slide-rules.md）と機械チェックを満たすことを確かめた26種類。
 # 資料の順番ではなく、ページが見せる材料の関係で分けてある。形を決めてから、その形の部品を引く。
 # 合わなければ --all の型を見るか、規約の範囲で自由に組む。
 CORE = [
@@ -150,6 +151,24 @@ CORE = [
     ("m28", "プロセスの段階", "手順・段階を横に並べる"),
     ("m33", "ロードマップ", "時期ごとに具体的な中身があるとき（中身が薄ければ、打ち手の表に時期の列を足す）"),
     ("m35", "意思決定ページ", "この会議で決める事項があるときだけ。サマリーで言い切れるなら置かない"),
+    (None, "研究発表の段取り", ""),
+    ("b33", "目的の帯＋2枚のカード", "目的を1文で示し、RQ1・RQ2 などの柱を2枚で並べる"),
+    ("b34", "範囲のカード 2×2", "枠組みの区分ごとに、主に扱う・一部・対象外を示す（検証・調査の範囲）"),
+    ("b39", "まとめ（RQ ごとの答え）", "冒頭の問いそれぞれに答えを1文で。根拠のページを → P.n で"),
+    ("b35", "見出しつきの箇条書き", "最後に「決めること」「作ること」のように群に分けて次の作業を並べる"),
+    ("b40", "参考文献の一覧", "本文で引いた文献だけを分野の書式で"),
+    ("b41", "付録の扉", "本編と付録の間の区切り（§4.100）"),
+    (None, "図・画像を見せる", ""),
+    ("b36", "図＋読み取り", "実験結果のグラフ・画面・写真を左に、読み取りを右に（画像を img で置く）"),
+    ("b37", "図2枚の比較", "条件・手法・前後の違いを同じ形の図2枚で。下に差を1文"),
+    ("b38", "図1枚を大きく", "構成図・画面など細部まで読ませたい図を1枚で"),
+    (None, "仕組み・手順・位置づけを説明する", ""),
+    ("b31", "3枚のカード＋矢印", "今のやり方の限界2つ → この研究の打ち手。下に次へ渡す要件を1〜2文"),
+    ("b32", "2枚の箇条書きカード", "先行研究・既存の仕組みの問題を2つの観点で並べる"),
+    ("b42", "システム構成図", "部品とデータの流れ（上段）と、共通の土台（下段）"),
+    ("b43", "数式＋記号の説明", "更新式・指標の定義と、記号の意味・既定値の表"),
+    ("b44", "実験の手順", "参加者・試行の流れを時間の順に。本番と説明・練習を線の色で分ける"),
+    ("b45", "先行研究との比較表", "先行研究を行、観点を列に ✓／― で。本研究の行を強調"),
 ]
 
 
@@ -279,9 +298,9 @@ def main():
    .sinner は印刷では版面の余白ぶん内側に置かれ、画面では版面いっぱいに置かれるので、角からの位置を media ごとに書く */
 .slide .hdr{{height:0;margin:0;padding:0;border:0}}
 .slide .hdr .logo{{display:none}}
-.slide .hdr .date{{position:absolute;top:calc(19px - var(--margin-y));right:calc(24px - var(--margin-x));font-size:20px;font-weight:700;letter-spacing:0;color:var(--title-rule);line-height:1.2}}
+.slide .hdr .date{{position:absolute;top:calc(19px - var(--margin-y));right:calc(24px - var(--margin-x));font-size:20px;font-weight:700;letter-spacing:0;color:var(--navy);line-height:1.2}}
 .slide .title{{position:relative;margin:11px 0 18px;padding-bottom:19px;max-width:none}}
-.slide .title::after{{content:"";position:absolute;left:calc(-1 * var(--margin-x));bottom:0;width:1416px;height:4.25px;background:var(--title-rule);box-shadow:0 2.4px 4.7px rgba(0,0,0,.35)}}
+.slide .title::after{{content:"";position:absolute;left:calc(-1 * var(--margin-x));bottom:0;width:1416px;height:4.25px;background:var(--title-rule)}}
 .slide .footer{{border-top:0;padding-top:0;color:var(--muted);font-size:12.5px}}
 .slide .footer>span:last-child{{position:absolute;right:calc(24px - var(--margin-x));bottom:calc(28px - var(--margin-y));font-size:16.7px;color:#555b66}}
 /* ===== 系統間の文字スケールも揃える（.s基準の実効サイズ: タイトル22pt・列見出し14.5pt・本文11.5pt。§6
